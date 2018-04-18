@@ -44,34 +44,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         // To detect proprietary beacons, you must add a line like below corresponding to your beacon
         // type.  Do a web search for "setBeaconLayout" to get the proper expression.
         //AltBeacon
-        beaconManager.setDebug(true);
+        //beaconManager.setDebug(true);
         beaconManager.setBackgroundBetweenScanPeriod(30000);
-        beaconManager.getBeaconParsers().add(new BeaconParser("animalltag")
-                .setBeaconLayout("x,m:4-5=beac,i:6-21,i:22-23,i:24-25,p:26-26,d:27-27"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"));
 
-        beaconManager.getBeaconParsers().add(new BeaconParser("animalltag")
-                .setBeaconLayout("m:3-5=beac,i:6-21,i:22-23,i:24-25,p:26-26,d:27-27"));
-
-
-        List<BeaconParser> beaconParserList = beaconManager.getBeaconParsers();
-        int i = 0;
-        for(BeaconParser beaconParser : beaconParserList) {
-            Log.i(TAG, "Beacon " + i + ": " + beaconParser.getIdentifier() + "  Layout: " + beaconParser.getLayout());
-            //Log.i(TAG, "--Service UUID: " + beaconParser.getServiceUuid() + " StartOffset: " +
-            //beaconParser.getMServiceUuidStartOffset() + " EndOffset: " + beaconParser.getServiceUuidEndOffset());
-            if(beaconParser.getIdentifier().equals("altbeacon")) {
-                beaconParserList.remove(i);
-                i--;
-            }
-            i++;
-        }
-
-        i = 0;
-        for(BeaconParser beaconParser : beaconParserList) {
-            Log.i(TAG, "2Beacon " + i + ": " + beaconParser.getIdentifier() + "  Layout: " + beaconParser.getLayout());
-            //Log.i(TAG, "--Service UUID: " + beaconParser.getServiceUuid() + " StartOffset: " +
-                    //beaconParser.getMServiceUuidStartOffset() + " EndOffset: " + beaconParser.getServiceUuidEndOffset());
-        }
         beaconManager.bind(this);
     }
 
@@ -87,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         beaconManager.addRangeNotifier(this);
 
         try {
-            Identifier i = Identifier.parse("4d43c8e0-b24e-11e6-9598-0800200c9a66");
-            Identifier i2 = Identifier.parse("02");
+            //Identifier i = Identifier.parse("4d43c8e0-b24e-11e6-9598-0800200c9a66");
+            //Identifier i2 = Identifier.parse("02");
             beaconManager.startMonitoringBeaconsInRegion(new Region("all-beacon-region", null, null, null));
         } catch (RemoteException e) {
             Log.e(TAG, "ERROR:: " + e.getMessage());
@@ -116,15 +94,30 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
     @Override
     public void didEnterRegion(Region region) {
         Log.v(TAG, "I just saw an beacon for the first time!");
+        Log.v(TAG, "Region:: BluetoothAddress: " + region.getBluetoothAddress()
+                + " Id1:" + region.getId1() + " Id2:" + region.getId2()
+                + " Id3:" + region.getId3());
+
+        try {
+            beaconManager.startRangingBeaconsInRegion(region);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error start ranging region: " + e.getMessage());
+        }
     }
 
     @Override
     public void didExitRegion(Region region) {
         Log.v(TAG, "I no longer see an beacon");
+        try {
+            beaconManager.stopRangingBeaconsInRegion(region);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error stop ranging region: " + e.getMessage());
+        }
     }
 
     @Override
     public void didDetermineStateForRegion(int state, Region region) {
         Log.v(TAG, "I have just switched from seeing/not seeing beacons: "+state);
+        Log.d(TAG, "Region State  " + state + " region " + region);
     }
 }
