@@ -10,6 +10,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -82,7 +83,27 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
             for(Beacon beacon : beacons)
             {
                 Log.v(TAG, "Beacon detected with id1: " + beacon.getId1() + " id2:" + beacon.getId2() + " id3: " + beacon.getId3() + " distance: " + beacon.getDistance());
-                Log.v(TAG, "BluetoothName:" + beacon.getBluetoothName() + " BluetoothAddress:" + beacon.getBluetoothAddress());
+                Log.v(TAG, "--BluetoothName:" + beacon.getBluetoothName() + " BluetoothAddress:" + beacon.getBluetoothAddress());
+                Log.v(TAG, "--ParserIdentifier:" + beacon.getParserIdentifier()
+                        + " getBeaconTypeCode:" + beacon.getBeaconTypeCode()
+                        + " Manufacturer:" + beacon.getManufacturer()
+                        + " RunningAverageRssi:" + beacon.getRunningAverageRssi());
+                List<Long> dataFields = beacon.getDataFields();
+                int i = 0;
+                Log.v(TAG, "--DATA:");
+                for(Long data: dataFields){
+                    Log.v(TAG, " data " + i + ": " + data + " - HEX [" + Long.toBinaryString(data) + "]");
+                            i++;
+                }
+
+                List<Long> extraDataFields = beacon.getExtraDataFields();
+                i = 0;
+                Log.v(TAG, "--EXTRA DATA:");
+                for(Long data: extraDataFields){
+                    Log.v(TAG, " data " + i + ": " + data + " - HEX [" + Long.toBinaryString(data) + "]");
+                    i++;
+                }
+                Log.v(TAG, "------------");
             }
         }
     }
