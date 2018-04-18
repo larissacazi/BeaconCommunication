@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
             for(Beacon beacon : beacons)
             {
                 Log.v(TAG, "Beacon detected with id1: " + beacon.getId1() + " id2:" + beacon.getId2() + " id3: " + beacon.getId3() + " distance: " + beacon.getDistance());
+                Log.v(TAG, "BluetoothName:" + beacon.getBluetoothName() + " BluetoothAddress:" + beacon.getBluetoothAddress());
             }
         }
     }
